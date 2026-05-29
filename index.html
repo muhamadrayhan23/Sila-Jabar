@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAGA JABAR - Sistem Informasi Kebencanaan Jawa Barat</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons for Beautiful Visuals -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0B0F19',
+                            card: '#151D30',
+                            accent: '#EF4444', // Merah Bencana
+                            orange: '#F97316', // Orange Kebencanaan
+                            light: '#94A3B8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animasi Transisi Halaman */
+        .page-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page-hidden {
+            opacity: 0;
+            transform: translateY(15px);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+        }
+
+        .page-active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            position: relative;
+        }
+
+        /* Radar Scanner Animation */
+        @keyframes radar-pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .radar-ring {
+            animation: radar-pulse 2s infinite ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-brand-dark text-slate-100 font-sans min-h-screen overflow-x-hidden flex flex-col justify-between">
+
+    <!-- SPLASH SCREEN / LOADING SCREEN -->
+    <div id="loader"
+        class="fixed inset-0 bg-brand-dark z-50 flex flex-col items-center justify-center transition-opacity duration-700 ease-out">
+        <div class="relative flex items-center justify-center mb-6">
+            <!-- Radar Ripple Effect -->
+            <div class="absolute w-24 h-24 rounded-full border-2 border-brand-accent/40 radar-ring"></div>
+            <div class="absolute w-24 h-24 rounded-full border-2 border-brand-orange/20 radar-ring"
+                style="animation-delay: 0.8s"></div>
+            <!-- Center Icon -->
+            <div
+                class="relative w-16 h-16 bg-brand-accent/20 rounded-full flex items-center justify-center border border-brand-accent/50">
+                <i class="fa-solid fa-triangle-exclamation text-brand-accent text-2xl animate-bounce"></i>
+            </div>
+        </div>
+        <h1
+            class="font-display font-bold text-2xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-brand-orange">
+            SIAGA JABAR
+        </h1>
+        <p class="text-xs text-brand-light mt-2 tracking-widest uppercase">Menganalisis Kerawanan, Menyelamatkan Jiwa
+        </p>
+        <div class="w-48 bg-slate-800 h-1 rounded-full mt-6 overflow-hidden">
+            <div class="bg-gradient-to-r from-brand-accent to-brand-orange h-full rounded-full animate-pulse"
+                style="width: 75%;"></div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="sticky top-0 z-40 bg-brand-dark/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 lg:px-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo Brand -->
+            <a href="#" onclick="switchPage('profile')" class="flex items-center gap-3 group">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-accent to-brand-orange p-[1px] shadow-lg shadow-brand-accent/10">
+                    <div class="w-full h-full bg-brand-dark rounded-xl flex items-center justify-center">
+                        <i
+                            class="fa-solid fa-shield-halved text-brand-accent group-hover:rotate-12 transition-transform"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-display font-bold text-lg tracking-wide block">SIAGA JABAR</span>
+                    <span
+                        class="text-[10px] text-brand-light block -mt-1 font-semibold uppercase tracking-widest">Informasi
+                        Bencana</span>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-2">
+                <button onclick="switchPage('profile')" id="nav-profile"
+                    class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+                    <i class="fa-solid fa-circle-info mr-2"></i>Profil
+                </button>
+                <button onclick="switchPage('dashboard')" id="nav-dashboard"
+                    class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Dashboard Data
+                </button>
+                <button onclick="switchPage('contact')" id="nav-contact"
+                    class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">
+                    <i class="fa-solid fa-envelope mr-2"></i>Kontak Darurat
+                </button>
+            </nav>
+
+            <!-- CTA Header / Hari/Tanggal -->
+            <div
+                class="hidden lg:flex items-center gap-3 text-xs bg-brand-card px-3 py-1.5 rounded-full border border-slate-800">
+                <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
+                <span id="live-date" class="font-medium text-slate-300">Memuat info waktu...</span>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button onclick="toggleMobileMenu()"
+                class="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 border border-slate-800">
+                <i class="fa-solid fa-bars text-lg" id="mobile-menu-icon"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation Panel -->
+        <div id="mobile-menu"
+            class="hidden md:hidden mt-3 p-4 bg-brand-card rounded-2xl border border-slate-800 flex-col gap-2 animate-fadeIn">
+            <button onclick="switchPage('profile'); toggleMobileMenu()"
+                class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                <i class="fa-solid fa-circle-info text-brand-orange"></i>Profil Aplikasi
+            </button>
+            <button onclick="switchPage('dashboard'); toggleMobileMenu()"
+                class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                <i class="fa-solid fa-chart-line text-brand-accent"></i>Dashboard & Visualisasi
+            </button>
+            <button onclick="switchPage('contact'); toggleMobileMenu()"
+                class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                <i class="fa-solid fa-envelope text-blue-400"></i>Kontak Darurat
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="relative flex-grow max-w-7xl w-full mx-auto px-4 py-8 lg:px-8 overflow-hidden">
+
+        <!-- 1. PAGE: PROFILE -->
+        <section id="page-profile" class="page-transition page-active">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+                <!-- Left Text Side -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div
+                        class="inline-flex items-center gap-2 bg-brand-accent/10 border border-brand-accent/20 px-3 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 bg-brand-accent rounded-full"></span>
+                        <span class="text-xs font-semibold text-brand-accent tracking-widest uppercase">Mitigasi &
+                            Kesiapsiagaan</span>
+                    </div>
+
+                    <h1
+                        class="font-display font-extrabold text-4xl lg:text-6xl tracking-tight leading-tight text-white">
+                        Sistem Pantau & <br>
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-brand-orange to-yellow-500">
+                            Informasi Bencana
+                        </span> <br>
+                        Jawa Barat
+                    </h1>
+
+                    <p class="text-brand-light text-base lg:text-lg leading-relaxed max-w-xl">
+                        Provinsi Jawa Barat secara geografis berada dalam wilayah cincin api pasifik, menjadikannya
+                        daerah yang kaya namun menyimpan risiko bencana alam yang signifikan. <strong>SIAGA
+                            JABAR</strong> hadir untuk mengemas data kebencanaan menjadi informasi taktis demi
+                        keselamatan publik.
+                    </p>
+
+                    <!-- Features Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                        <div class="flex gap-3 items-start bg-brand-card/50 p-4 rounded-xl border border-slate-800">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
+                                <i class="fa-solid fa-chart-pie text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">Visualisasi Terstruktur</h3>
+                                <p class="text-xs text-brand-light mt-1">Representasi data historis bencana yang mudah
+                                    dipahami oleh semua kalangan.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start bg-brand-card/50 p-4 rounded-xl border border-slate-800">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-brand-accent/10 flex items-center justify-center text-brand-accent shrink-0">
+                                <i class="fa-solid fa-map-location-dot text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">Pemetaan Wilayah</h3>
+                                <p class="text-xs text-brand-light mt-1">Identifikasi cepat zona rawan gempa, banjir,
+                                    longsor, dan erupsi di Jawa Barat.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-6">
+                        <button onclick="switchPage('dashboard')"
+                            class="group relative px-8 py-4 bg-gradient-to-r from-brand-accent to-brand-orange rounded-xl font-bold text-white shadow-lg shadow-brand-accent/20 hover:shadow-brand-orange/30 hover:scale-[1.02] transition-all flex items-center gap-3">
+                            <span>Mulai Pantau Dashboard</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Visual Side -->
+                <div class="lg:col-span-5 relative mt-8 lg:mt-0">
+                    <!-- Background Glow -->
+                    <div class="absolute -inset-4 bg-brand-accent/10 blur-3xl rounded-full"></div>
+
+                    <!-- Main Card Visual -->
+                    <div
+                        class="relative bg-brand-card/70 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm shadow-xl space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-earth-asia text-emerald-400 text-lg"></i>
+                                <span class="font-bold text-sm text-slate-200">Indeks Kerawanan Jawa Barat</span>
+                            </div>
+                            <span
+                                class="text-xs bg-slate-800 text-brand-orange px-2 py-0.5 rounded font-semibold">Tinggi</span>
+                        </div>
+
+                        <!-- Mini Stats Display -->
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-semibold text-slate-300">
+                                    <span>Tingkat Kerawanan Tanah Longsor</span>
+                                    <span>85%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-brand-accent h-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-semibold text-slate-300">
+                                    <span>Potensi Genangan Air / Banjir</span>
+                                    <span>72%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-brand-orange h-full" style="width: 72%"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-semibold text-slate-300">
+                                    <span>Aktivitas Seismik / Gempa Bumi</span>
+                                    <span>60%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-yellow-500 h-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Alert Quote -->
+                        <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-start gap-3">
+                            <i class="fa-solid fa-circle-exclamation text-brand-orange text-lg shrink-0 mt-0.5"></i>
+                            <p class="text-xs text-brand-light leading-relaxed">
+                                "Mengetahui potensi ancaman di lingkungan sekitar adalah langkah perdana dan terpenting
+                                dalam rantai keselamatan bencana."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. PAGE: DASHBOARD -->
+        <section id="page-dashboard" class="page-transition page-hidden">
+            <div class="space-y-6">
+                <!-- Header Title -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div
+                            class="inline-flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/20 px-3 py-1 rounded-full mb-2">
+                            <span class="w-1.5 h-1.5 bg-brand-orange rounded-full"></span>
+                            <span
+                                class="text-[10px] font-semibold text-brand-orange tracking-widest uppercase">Visualisasi
+                                Interaktif</span>
+                        </div>
+                        <h2 class="font-display font-bold text-3xl text-white">Dashboard Analisis Bencana</h2>
+                        <p class="text-sm text-brand-light mt-1">Gunakan panel interaktif Looker Studio di bawah untuk
+                            mengeksplorasi dan memfilter data bencana Jawa Barat.</p>
+                    </div>
+
+                    <!-- Info Badge -->
+                    <div
+                        class="bg-brand-card border border-slate-800 px-4 py-2 rounded-2xl flex items-center gap-2 self-start md:self-auto">
+                        <i class="fa-solid fa-arrows-spin text-brand-accent animate-spin text-sm"></i>
+                        <span class="text-xs text-slate-300 font-medium">Data Terupdate Real-Time</span>
+                    </div>
+                </div>
+
+                <!-- Iframe Container with premium glassmorphism card wrapper -->
+                <div
+                    class="relative bg-brand-card/50 border border-slate-800/80 rounded-3xl p-3 lg:p-5 shadow-2xl overflow-hidden backdrop-blur-md">
+                    <!-- Loading skeleton inside iframe before load -->
+                    <div id="iframe-loader"
+                        class="absolute inset-0 bg-brand-card flex flex-col items-center justify-center z-10 transition-opacity duration-500">
+                        <i class="fa-solid fa-spinner text-brand-accent text-3xl animate-spin mb-3"></i>
+                        <span class="text-xs text-slate-400">Menghubungkan ke Google Looker Studio...</span>
+                    </div>
+
+                    <!-- Responsive Iframe Wrapper -->
+                    <div
+                        class="w-full overflow-hidden rounded-2xl border border-slate-800/50 bg-slate-950 aspect-[4/5] sm:aspect-[4/5] md:aspect-[3/4] lg:h-[820px] lg:aspect-auto">
+                        <!-- THE GOOGLE LOOKER STUDIO EMBED -->
+                        <iframe width="100%" height="100%"
+                            src="https://datastudio.google.com/embed/reporting/beb97f89-bbae-45e0-94fa-f071dc97a99c/page/OiEzF"
+                            frameborder="0" style="border:0" allowfullscreen
+                            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                            class="w-full h-full" onload="hideIframeLoader()">
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Dashboard Footer Tips -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-slate-900/40 rounded-2xl border border-slate-800/60 flex gap-3">
+                        <span class="text-xl text-brand-orange font-bold font-display">01</span>
+                        <div class="text-xs">
+                            <h4 class="font-bold text-slate-200">Gunakan Filter Halaman</h4>
+                            <p class="text-brand-light mt-1">Anda bisa mempersempit cakupan berdasarkan rentang tanggal
+                                atau wilayah Kabupaten/Kota.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-900/40 rounded-2xl border border-slate-800/60 flex gap-3">
+                        <span class="text-xl text-brand-accent font-bold font-display">02</span>
+                        <div class="text-xs">
+                            <h4 class="font-bold text-slate-200">Interaksi Elemen Grafik</h4>
+                            <p class="text-brand-light mt-1">Sentuh atau arahkan kursor pada diagram batang/lingkaran
+                                untuk memunculkan detail angka riil.</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-900/40 rounded-2xl border border-slate-800/60 flex gap-3">
+                        <span class="text-xl text-yellow-500 font-bold font-display">03</span>
+                        <div class="text-xs">
+                            <h4 class="font-bold text-slate-200">Ekspansi Layar Penuh</h4>
+                            <p class="text-brand-light mt-1">Gunakan ikon di pojok kanan bawah bingkai Looker Studio
+                                untuk memperbesar tampilan data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PAGE: CONTACT -->
+        <section id="page-contact" class="page-transition page-hidden">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Header -->
+                <div class="text-center space-y-2">
+                    <div
+                        class="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+                        <span class="text-[10px] font-semibold text-red-400 tracking-widest uppercase">Garda Depan
+                            Keselamatan</span>
+                    </div>
+                    <h2 class="font-display font-bold text-3xl text-white">Hubungi Kontak Darurat</h2>
+                    <p class="text-sm text-brand-light max-w-lg mx-auto">Segera hubungi nomor resmi instansi terkait di
+                        bawah ini jika terjadi kecelakaan atau indikasi bencana alam di sekitar Anda.</p>
+                </div>
+
+                <!-- Emergency Fast Buttons Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- BPBD Jabar -->
+                    <div
+                        class="bg-brand-card/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+                                <i class="fa-solid fa-house-fire text-lg"></i>
+                            </div>
+                            <span
+                                class="text-[10px] bg-brand-orange/10 text-brand-orange px-2 py-0.5 rounded-full font-bold">BPBD
+                                PROV</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">BPBD Jawa Barat</h3>
+                        <p class="text-xs text-brand-light mt-1 mb-4">Badan Penanggulangan Bencana Daerah Jawa Barat.
+                        </p>
+                        <a href="tel:0227315274"
+                            class="w-full py-2.5 bg-slate-800 hover:bg-brand-orange hover:text-black transition-colors rounded-xl text-xs font-bold text-center block">
+                            <i class="fa-solid fa-phone mr-2"></i>(022) 7315274
+                        </a>
+                    </div>
+
+                    <!-- SAR Bandung -->
+                    <div
+                        class="bg-brand-card/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-brand-accent/40 transition-all duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-brand-accent/10 flex items-center justify-center text-brand-accent">
+                                <i class="fa-solid fa-person-falling-burst text-lg"></i>
+                            </div>
+                            <span
+                                class="text-[10px] bg-brand-accent/10 text-brand-accent px-2 py-0.5 rounded-full font-bold">BASARNAS</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">SAR Bandung</h3>
+                        <p class="text-xs text-brand-light mt-1 mb-4">Penyelamatan kecelakaan ekstrem, bencana &
+                            evakuasi.</p>
+                        <a href="tel:0227780111"
+                            class="w-full py-2.5 bg-slate-800 hover:bg-brand-accent hover:text-white transition-colors rounded-xl text-xs font-bold text-center block">
+                            <i class="fa-solid fa-phone mr-2"></i>(022) 7780111
+                        </a>
+                    </div>
+
+                    <!-- Call Center 112 -->
+                    <div
+                        class="bg-gradient-to-br from-brand-card to-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/40 transition-all duration-300 col-span-1 sm:col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                                <i class="fa-solid fa-headset text-lg"></i>
+                            </div>
+                            <span
+                                class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded-full font-bold">NASIONAL</span>
+                        </div>
+                        <h3 class="font-bold text-white text-base">Layanan Darurat 112</h3>
+                        <p class="text-xs text-brand-light mt-1 mb-4">Layanan panggilan cepat darurat terpadu bebas
+                            pulsa.</p>
+                        <a href="tel:112"
+                            class="w-full py-2.5 bg-yellow-500 text-black hover:bg-yellow-400 transition-colors rounded-xl text-xs font-bold text-center block">
+                            <i class="fa-solid fa-phone mr-2"></i>Telepon 112
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Interactive Message Form -->
+                <div class="bg-brand-card/50 border border-slate-800/80 rounded-3xl p-6 lg:p-8 backdrop-blur-md">
+                    <h3 class="font-display font-bold text-xl text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-brand-accent"></i>
+                        <span>Kirim Laporan Kerusakan / Potensi Bencana</span>
+                    </h3>
+
+                    <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-300 uppercase">Nama Lengkap</label>
+                                <input type="text" required
+                                    class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                                    placeholder="Contoh: Muhamad Rayhan">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-300 uppercase">Kontak / No. Telepon</label>
+                                <input type="tel" required
+                                    class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                                    placeholder="Contoh: 081234567xxx">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-300 uppercase">Lokasi Kejadian
+                                (Kecamatan/Kabupaten)</label>
+                            <input type="text" required
+                                class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                                placeholder="Contoh: Kecamatan Cimaung, Kabupaten Bandung">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-300 uppercase">Deskripsi Kejadian / Kebutuhan
+                                Bantuan</label>
+                            <textarea required rows="4"
+                                class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                                placeholder="Tulis rincian bencana secara singkat dan padat..."></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-brand-accent to-brand-orange text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-brand-accent/20 hover:scale-[1.01] transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Kirim Laporan Lapangan</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FLOATING POPUP MESSAGE BOX -->
+    <div id="toast"
+        class="fixed bottom-6 right-6 z-50 bg-brand-card border-l-4 border-brand-accent p-4 rounded-xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300 flex items-start gap-3 max-w-sm">
+        <div
+            class="w-8 h-8 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent shrink-0">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-slate-100 text-xs">Sistem Notifikasi</h4>
+            <p id="toast-text" class="text-[10px] text-brand-light mt-1">Laporan berhasil dikirim ke server mitigasi
+                bencana.</p>
+        </div>
+        <button onclick="dismissToast()" class="text-slate-500 hover:text-slate-300 text-xs ml-auto">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- MAIN FOOTER -->
+    <footer class="bg-brand-dark border-t border-slate-900 px-4 py-6 text-center text-xs text-slate-500 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-brand-accent"></i>
+                <span class="font-display font-bold text-slate-400">SIAGA JABAR © 2026</span>
+            </div>
+            <p>Dibuat secara mandiri menggunakan teknologi Web Responsif & Google Looker Studio</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTION LOGIC (VANILLA JS) -->
+    <script>
+        // 1. Hide Loading Splash Screen
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('opacity-0');
+                // Remove from DOM layout once done
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 700);
+            }, 1200); // Tahan loading 1.2 detik agar terasa animasinya
+        });
+
+        // 2. Real-Time Date display in Header
+        function updateDate() {
+            const dateEl = document.getElementById('live-date');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            dateEl.innerText = today.toLocaleDateString('id-ID', options);
+        }
+        updateDate();
+
+        // 3. Single Page Application (SPA) Router Logic
+        function switchPage(pageId) {
+            const pages = ['profile', 'dashboard', 'contact'];
+
+            pages.forEach(p => {
+                const targetPage = document.getElementById(`page-${p}`);
+                const targetNav = document.getElementById(`nav-${p}`);
+
+                if (p === pageId) {
+                    // Activate Page
+                    targetPage.classList.remove('page-hidden');
+                    targetPage.classList.add('page-active');
+
+                    // Highlight Nav Button
+                    targetNav.classList.remove('text-slate-400', 'hover:bg-slate-800/50');
+                    targetNav.classList.add('bg-slate-800', 'text-white', 'border-b-2', 'border-brand-accent');
+                } else {
+                    // Deactivate Page
+                    targetPage.classList.remove('page-active');
+                    targetPage.classList.add('page-hidden');
+
+                    // Reset Nav Button
+                    targetNav.classList.remove('bg-slate-800', 'text-white', 'border-b-2', 'border-brand-accent');
+                    targetNav.classList.add('text-slate-400', 'hover:bg-slate-800/50');
+                }
+            });
+
+            // Scroll back to top on page switch
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Run first active initialization
+        switchPage('profile');
+
+        // 4. Hide Looker Studio Loader once Iframe finishes rendering
+        function hideIframeLoader() {
+            const iframeLoader = document.getElementById('iframe-loader');
+            if (iframeLoader) {
+                iframeLoader.classList.add('opacity-0');
+                setTimeout(() => {
+                    iframeLoader.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // 5. Mobile Hamburgermenu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                icon.className = 'fa-solid fa-xmark text-lg';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                icon.className = 'fa-solid fa-bars text-lg';
+            }
+        }
+
+        // 6. Handle Form Laporan Darurat
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Tampilkan custom toast message box
+            showToast("Laporan lapangan berhasil tercatat di database mitigasi bencana.");
+
+            // Reset formulir setelah dikirim
+            document.getElementById('contact-form').reset();
+        }
+
+        // 7. Toast Notification Controller
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+
+            toastText.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                dismissToast();
+            }, 5000);
+        }
+
+        function dismissToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }
+    </script>
+</body>
+
+</html>
