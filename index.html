@@ -148,6 +148,10 @@
                     class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-brand-emerald hover:bg-slate-100">
                     <i class="fa-solid fa-chart-pie mr-1.5"></i>Dashboard Visual
                 </a>
+                <a href="#page-data" id="nav-data"
+                    class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-brand-emerald hover:bg-slate-100">
+                    <i class="fa-solid fa-database mr-1.5"></i>Tentang Data
+                </a>
                 <a href="#page-contact" id="nav-contact"
                     class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:text-brand-emerald hover:bg-slate-100">
                     <i class="fa-solid fa-circle-nodes mr-1.5"></i>Kontak & Layanan
@@ -181,6 +185,10 @@
             <a href="#page-dashboard" onclick="toggleMobileMenu()" id="mob-dashboard"
                 class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 text-slate-600 hover:bg-slate-100">
                 <i class="fa-solid fa-chart-pie text-brand-sky"></i>Visualisasi Data Studio
+            </a>
+            <a href="#page-data" onclick="toggleMobileMenu()" id="mob-data"
+                class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-database text-brand-emerald"></i>Tentang Data
             </a>
             <a href="#page-contact" onclick="toggleMobileMenu()" id="mob-contact"
                 class="mobile-nav-btn text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 text-slate-600 hover:bg-slate-100">
@@ -398,7 +406,121 @@
             </div>
         </section>
 
-        <!-- 3. SECTION: CONTACT -->
+        <!-- 3. SECTION: TENTANG DATA -->
+
+        <section id="page-data" class="scroll-mt-24 border-t border-slate-100 pt-16">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Header -->
+                <div class="text-center space-y-2">
+                    <div
+                        class="inline-flex items-center gap-2 bg-brand-emerald/10 border border-brand-emerald/20 px-3 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 bg-brand-emerald rounded-full"></span>
+                        <span class="text-[10px] font-bold text-brand-emerald tracking-widest uppercase">Tentang
+                            Data</span>
+                    </div>
+                    <h2 class="font-display font-bold text-3xl text-slate-900">Sumber & Glosarium Dataset</h2>
+                    <p class="text-sm text-slate-500 max-w-lg mx-auto">Dokumentasi tautan data BPS serta definisi
+                        operasional setiap kolom pada
+                        dataset kelahiran hidup.</p>
+                </div>
+
+                <!-- Data Source -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 space-y-4">
+                    <h3 class="font-display font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-brand-emerald"></i>
+                        <span>Tautan URL Tabel Asli BPS</span>
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Data mengenai jumlah kelahiran hidup per kabupaten/kota di Jawa Barat secara berkala
+                        dipublikasikan oleh BPS melalui kompilasi data sektoral (Dinas Kesehatan) serta proyeksi
+                        penduduk resmi.
+                    </p>
+                    <a href="https://opendata.jabarprov.go.id/id/dataset/jumlah-kelahiran-bayi-berdasarkan-status-kelahiran-dan-jenis-kelamin-di-jawa-barat"
+                        target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 px-4 py-3 bg-brand-emerald text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-brand-emerald/20 transition-all">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        Tautan BPS/Open Data Jabar
+                    </a>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        <span class="font-semibold text-slate-700">Catatan: </span> Data
+                        tahun 2021–2023 pada dataset Anda adalah angka real
+                        berdasarkan pencatatan fasilitas kesehatan (Dinas Kesehatan) yang dirilis BPS Jabar dalam
+                        laporan
+                        "Provinsi Jawa Barat Dalam Angka". Sementara untuk tahun 2024–2025 menggunakan angka estimasi
+                        berbasis
+                        laju pertumbuhan penduduk alami hasil proyeksi sensus BPS.
+                    </p>
+                </div>
+
+                <!-- Glossary -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 space-y-4">
+                    <h3 class="font-display font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-brand-sky"></i>
+                        <span>Glosarium & Definisi Variabel Dataset</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-800 text-sm">Kabupaten/Kota</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <span class="font-semibold">Definisi:</span> Wilayah administrasi tingkat dua di
+                                Provinsi Jawa Barat yang menjadi tempat
+                                domisili atau pencatatan peristiwa kelahiran. Jawa Barat terdiri dari 27 wilayah (18
+                                kabupaten dan 9 kota).
+                            </p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                <span class="font-semibold">Tipe Data di Looker Studio:</span> Text (atau diubah ke Geo
+                                -> Subdivision 1st level jika ingin dijadikan filter wilayah).
+                            </p>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-800 text-sm">Alamat</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <span class="font-semibold">Definisi:</span> Keterangan geografis standar (Geocoding
+                                text) yang mencantumkan nama wilayah,
+                                nama provinsi, dan negara secara lengkap (contoh: "Bogor Regency, West Java,
+                                Indonesia"). Kolom ini ditambahkan khusus agar kecerdasan buatan peta Google Looker
+                                Studio tidak salah mengenali wilayah dengan nama serupa di belahan dunia lain.
+                            </p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                <span class="font-semibold">Tipe Data di Looker Studio:</span> Geo -> Address.
+                            </p>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-800 text-sm">Jumlah Kelahiran Hidup</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <span class="font-semibold">Definisi Resmi BPS:</span> Jumlah bayi yang dilahirkan dari
+                                seorang ibu yang menunjukkan tanda-tanda kehidupan pada saat dilahirkan
+                                (seperti adanya detak jantung, denyut tali pusat, atau gerakan otot volunter yang
+                                nyata), tanpa memperhitungkan berapa lama bayi tersebut berada dalam kandungan.
+                                Ini berbeda dengan istilah Lahir Mati (Stillbirth) yang tidak dimasukkan ke dalam
+                                dataset ini.
+                            </p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                <span class="font-semibold">Tipe Data di Looker Studio:</span> Number (Integer) dengan
+                                metode agregasi otomatis berupa Sum (Penjumlahan).
+                            </p>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h4 class="font-bold text-slate-800 text-sm">Tahun</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                <span class="font-semibold">Definisi:</span> Periode waktu kalender (berjalan dari
+                                Januari sampai Desember) di mana peristiwa kelahiran hidup tersebut dicatat secara
+                                administratif.
+                            </p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                <span class="font-semibold">Tipe Data di Looker Studio:</span> Date & Time -> Year
+                                (YYYY).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SECTION: CONTACT -->
         <section id="page-contact" class="scroll-mt-24 border-t border-slate-100 pt-16">
             <div class="max-w-4xl mx-auto space-y-8">
                 <!-- Header -->
@@ -529,13 +651,12 @@
 
     <!-- MAIN FOOTER -->
     <footer
-        class="bg-white border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-500 transition-colors duration-300 mt-auto">
+        class="bg-white border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-500 transition-colors duration-300 mt-auto items-center justify-center">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-shield-heart text-brand-emerald"></i>
-                <span class="font-display font-bold text-slate-700">SILA JABAR © 2026</span>
+                <span class="font-display font-bold text-slate-700">SILA JABAR © <span id="current-year"></span></span>
             </div>
-            <p class="text-slate-400">Teknologi Single Page Scroll, Google Looker Studio & Tailwind CSS</p>
         </div>
     </footer>
 
@@ -561,18 +682,30 @@
                 dateEl.innerText = today.toLocaleDateString('id-ID', options);
             }
         }
+
+        function updateCurrentYear() {
+            const yearEl = document.getElementById('current-year');
+            if (yearEl) {
+                yearEl.innerText = new Date().getFullYear();
+            }
+        }
+
         updateDate();
+        updateCurrentYear();
 
         // 3. Scrollspy Controller (Highlight active menu dynamically based on scroll position)
         const sections = document.querySelectorAll('section');
         const navItems = {
             'page-profile': document.getElementById('nav-profile'),
             'page-dashboard': document.getElementById('nav-dashboard'),
+            'page-data': document.getElementById('nav-data'),
             'page-contact': document.getElementById('nav-contact')
         };
+
         const mobNavItems = {
             'page-profile': document.getElementById('mob-profile'),
             'page-dashboard': document.getElementById('mob-dashboard'),
+            'page-data': document.getElementById('mob-data'),
             'page-contact': document.getElementById('mob-contact')
         };
 
