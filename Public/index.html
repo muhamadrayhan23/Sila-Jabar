@@ -111,10 +111,7 @@
         </h1>
         <p class="text-xs text-brand-emerald/90 mt-2 tracking-widest uppercase font-semibold">Sistem Informasi Kelahiran
             Hidup</p>
-        <div class="w-48 bg-slate-100 h-1.5 rounded-full mt-6 overflow-hidden">
-            <div class="bg-gradient-to-r from-brand-emerald to-brand-sky h-full rounded-full animate-pulse"
-                style="width: 80%;"></div>
-        </div>
+
     </div>
 
     <!-- MAIN NAVBAR -->
@@ -661,14 +658,287 @@
     </footer>
 
     <!-- INTERACTION & SCROLLSPY LOGIC (VANILLA JS) -->
+    <!-- CHATBOT LAUNCHER (Floating) -->
+    <style>
+        #chat-launcher {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #10B981 0%, #0EA5E9 100%);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 80;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        /* Saat halaman masih loading, sembunyikan launcher (bypass dari CSS/JS lain) */
+        #chat-launcher.is-page-loading {
+            display: none !important;
+        }
+
+        @keyframes typingDots {
+            0% {
+                content: '.';
+            }
+
+            33% {
+                content: '..';
+            }
+
+            66% {
+                content: '...';
+            }
+
+            100% {
+                content: '.';
+            }
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .typing-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(14, 165, 233, 0.65);
+            animation: typingBounce 1s infinite;
+        }
+
+        .typing-indicator .dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-indicator .dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        #chat-launcher:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.25);
+        }
+
+        #chat-launcher-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+        }
+
+        #chat-widget {
+            position: fixed;
+            right: 20px;
+            bottom: 88px;
+            width: 360px;
+            max-width: calc(100vw - 40px);
+            height: 520px;
+            max-height: calc(100vh - 120px);
+            background: white;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(2, 6, 23, 0.18);
+            z-index: 70;
+            display: none;
+            overflow: hidden;
+        }
+
+        #chat-widget.show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 14px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(14, 165, 233, 0.18));
+            border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+        }
+
+        #chat-widget-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.2px;
+        }
+
+        #chat-widget-body {
+            flex: 1;
+            padding: 12px 12px;
+            overflow: auto;
+            background: linear-gradient(180deg, rgba(248, 250, 252, 1), rgba(241, 245, 249, 1));
+        }
+
+        .chat-msg {
+            padding: 10px 12px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            font-size: 13.5px;
+            line-height: 1.35;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .chat-msg.user {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            margin-left: auto;
+            max-width: 85%;
+        }
+
+        .chat-msg.assistant {
+            background: rgba(14, 165, 233, 0.10);
+            border: 1px solid rgba(14, 165, 233, 0.22);
+            margin-right: auto;
+            max-width: 85%;
+        }
+
+        #chat-widget-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(148, 163, 184, 0.35);
+            background: white;
+        }
+
+        #chat-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #chat-input {
+            flex: 1;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            border-radius: 14px;
+            padding: 10px 12px;
+            outline: none;
+            font-size: 13.5px;
+        }
+
+        #chat-input:focus {
+            border-color: rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+        }
+
+        #chat-send {
+            border-radius: 14px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #10B981 0%, #0EA5E9 100%);
+            color: white;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            min-width: 92px;
+        }
+
+        #chat-send:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        #chat-send:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        #chat-close {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <!-- Floating launcher button -->
+    <button id="chat-launcher" type="button" aria-label="Buka chatbot" title="Chatbot Layanan">
+        <span id="chat-launcher-badge" aria-hidden="true"></span>
+        <i class="fa-solid fa-comment-dots text-xl"></i>
+    </button>
+
+    <!-- Chat widget -->
+    <div id="chat-widget" role="dialog" aria-label="Chatbot">
+        <div id="chat-widget-header">
+            <div id="chat-widget-title">
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-white/70 border border-slate-200">
+                    <i class="fa-solid fa-baby text-brand-emerald text-lg"></i>
+                </span>
+                <span>Chatbot Layanan</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+
+                <button id="chat-close" type="button" aria-label="Tutup chatbot">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div id="chat-widget-body"></div>
+        <div id="chat-widget-footer">
+            <form id="chat-form">
+                <input id="chat-input" type="text" placeholder="Tulis pertanyaan..." autocomplete="off" />
+                <button id="chat-send" type="submit">Kirim</button>
+            </form>
+            <div id="chat-error" class="text-xs text-red-600 mt-2" style="display:none;"></div>
+        </div>
+    </div>
+
     <script>
         // 1. Loader Screen Controller
+
+        // Flag untuk memastikan launcher chatbot tidak tampil saat splash/halaman masih loading
+        window.__isPageLoading = true;
+
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
+            const chatLauncherEl = document.getElementById('chat-launcher');
+
             setTimeout(() => {
                 loader.classList.add('opacity-0');
                 setTimeout(() => {
                     loader.style.display = 'none';
+
+                    window.__isPageLoading = false;
+
+                    // tampilkan launcher hanya setelah splash loader selesai
+                    if (chatLauncherEl) {
+                        chatLauncherEl.classList.remove('is-page-loading');
+                        chatLauncherEl.style.display = 'flex';
+                    }
                 }, 700);
             }, 1000); // 1-second load animation
         });
@@ -760,6 +1030,7 @@
 
         // 5. Mobile Hamburger Menu Toggle
         function toggleMobileMenu() {
+
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('mobile-menu-icon');
             if (menu.classList.contains('hidden')) {
@@ -772,6 +1043,150 @@
                 icon.className = 'fa-solid fa-bars text-lg';
             }
         }
+
+
+        // 6. Chatbot launcher + streaming chat
+        const chatLauncher = document.getElementById('chat-launcher');
+        const chatWidget = document.getElementById('chat-widget');
+        const chatBody = document.getElementById('chat-widget-body');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        const chatError = document.getElementById('chat-error');
+        const chatClose = document.getElementById('chat-close');
+        const chatMinimize = document.getElementById('chat-minimize');
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `chat-msg ${role}`;
+            div.textContent = text;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return div;
+        }
+
+        function showWidget() {
+            if (!chatWidget) return;
+            chatWidget.classList.add('show');
+        }
+
+        function hideWidget() {
+            if (!chatWidget) return;
+            chatWidget.classList.remove('show');
+        }
+
+        function resetError() {
+            if (chatError) chatError.style.display = 'none';
+            if (chatError) chatError.textContent = '';
+        }
+
+        async function sendChat(message) {
+            resetError();
+            if (!message || !message.trim()) return;
+
+            const userText = message.trim();
+            appendMessage('user', userText);
+
+            const assistantDiv = appendMessage('assistant', '');
+
+            // typing indicator saat chatbot membalas
+            const typingEl = document.createElement('div');
+            typingEl.className = 'typing-indicator';
+            typingEl.setAttribute('aria-label', 'Chatbot sedang mengetik');
+            typingEl.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span> <span style="font-size:12px; color: rgba(2,6,23,0.55); font-weight:600;">Sedang mengetik</span>';
+            assistantDiv.appendChild(typingEl);
+
+            chatSend.disabled = true;
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText })
+                });
+
+                if (!res.ok || !res.body) {
+                    throw new Error(`Request failed: ${res.status} ${res.statusText}`);
+                }
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+
+                let buffer = '';
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Expected chunk format: data: {"content":"..."}\n\n
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop();
+
+                    for (const part of parts) {
+                        const line = part.split('\n').find(l => l.startsWith('data:'));
+                        if (!line) continue;
+                        const jsonStr = line.replace(/^data:\s*/, '');
+                        try {
+                            const payload = JSON.parse(jsonStr);
+                            const content = payload.content || '';
+                            if (content) {
+                                // jika sudah ada token pertama, stop typing indicator
+                                if (typingEl && typingEl.isConnected) {
+                                    typingEl.remove();
+                                }
+                                assistantDiv.textContent += content;
+                                chatBody.scrollTop = chatBody.scrollHeight;
+                            }
+                        } catch (e) {
+                            // ignore partial/invalid json
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (chatError) {
+                    chatError.style.display = 'block';
+                    chatError.textContent = `Gagal memproses chat. ${err.message}`;
+                }
+                appendMessage('assistant', `Maaf, terjadi kesalahan: ${err.message}`);
+            } finally {
+                // pastikan typing indicator tidak tertinggal
+                if (typingEl && typingEl.isConnected) {
+                    typingEl.remove();
+                }
+                chatSend.disabled = false;
+            }
+        }
+
+        if (chatLauncher) chatLauncher.addEventListener('click', () => {
+            resetError();
+            showWidget();
+            if (chatInput) chatInput.focus();
+        });
+
+        if (chatClose) chatClose.addEventListener('click', () => {
+            hideWidget();
+        });
+
+
+
+        if (chatForm) chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const msg = chatInput.value;
+            chatInput.value = '';
+            sendChat(msg);
+        });
+
+        // 7. Auto-open widget (opsional: tetap user langsung bisa pakai)
+        // Jika tidak ingin auto-open, ganti menjadi false.
+        // Auto-open dimatikan agar launcher tidak tertutup saat loading.
+        const AUTO_OPEN_CHAT = false;
+        if (AUTO_OPEN_CHAT) {
+            showWidget();
+        }
+
+        // end chat
     </script>
 </body>
 
