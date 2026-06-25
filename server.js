@@ -46,11 +46,6 @@ app.post("/chat", async (req, res) => {
     }
 });
 
-// Local dev only. In Netlify, the endpoint is handled by `netlify/functions/chat.js`.
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running at http://localhost:${PORT}`);
-    });
-}
-
-
+app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+});

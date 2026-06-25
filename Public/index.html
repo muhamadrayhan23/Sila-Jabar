@@ -1099,39 +1099,14 @@
             chatSend.disabled = true;
 
             try {
-                // Endpoint utama: Netlify Functions biasanya dipetakan ke /api/<function-name>
-                // Backend streaming juga mengirim format SSE: "data: {...}\\n\\n".
-                const tryEndpoints = ['/api/chat', '/chat'];
-                let res;
-                let lastErr;
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText })
+                });
 
-                for (const endpoint of tryEndpoints) {
-                    try {
-                        res = await fetch(endpoint, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: userText }),
-                        });
-
-                        // Jika endpoint tidak ada (404) atau bukan stream, coba endpoint berikutnya.
-                        if (!res.ok) {
-                            lastErr = new Error(`Request failed: ${res.status} ${res.statusText}`);
-                            continue;
-                        }
-
-                        break; // sukses
-                    } catch (e) {
-                        lastErr = e;
-                    }
-                }
-
-                if (!res || !res.ok) {
-                    throw lastErr || new Error('Gagal terhubung ke endpoint chatbot');
-                }
-
-
-                if (!res.body) {
-                    throw new Error('Response tidak memiliki body stream');
+                if (!res.ok || !res.body) {
+                    throw new Error(`Request failed: ${res.status} ${res.statusText}`);
                 }
 
                 const reader = res.body.getReader();
