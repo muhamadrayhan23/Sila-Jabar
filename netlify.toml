@@ -1,0 +1,12 @@
+# Tell Netlify where your build output (frontend assets) are.
+# If you don't run a build step, set it to the folder containing your static files.
+[build]
+  # Frontend static assets live in:
+  publish = "Public"
+
+# Configure backend functions
+# Netlify will look for serverless functions in this folder.
+[functions]
+  # folder containing the JS functions (e.g. netlify/functions/chat.js)
+  directory = "netlify/functions"
+
