@@ -1,7 +1,14 @@
 {
+  "name": "website-visualisasi-data",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "openai": "^6.44.0"
+    "openai": "^6.44.0",
+    "serverless-http": "^4.0.0"
   }
 }

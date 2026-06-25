@@ -1,26 +1,24 @@
 const express = require("express");
+const serverless = require("serverless-http");
 const dotenv = require("dotenv");
-const OpenAI = require("openai");
 const path = require("path");
+const OpenAI = require("openai");
 
-dotenv.config({ path: path.join(__dirname, ".env") });
+// Load env (Netlify usually provides env vars; .env is for local dev)
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const app = express();
-const PORT = 3000;
+
+app.use(express.json());
+
 
 const client = new OpenAI({
     baseURL: "https://router.huggingface.co/v1",
     apiKey: process.env.HF_TOKEN || "missing_token",
 });
 
-// middleware
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-
-// endpoint untuk chat
 app.post("/chat", async (req, res) => {
-    const { message } = req.body;
-    console.log("Pesan diterima:", message);
+    const { message } = req.body || {};
 
     try {
         const stream = await client.chat.completions.create({
@@ -39,18 +37,14 @@ app.post("/chat", async (req, res) => {
                 res.write(`data: ${JSON.stringify({ content })}\n\n`);
             }
         }
+
         res.end();
     } catch (error) {
-        console.error("Error dari Hugging Face:", error.message);
-        res.status(500).json({ error: error.message });
+        console.error("Error dari Hugging Face:", error?.message || error);
+        res.status(500).json({ error: error?.message || String(error) });
     }
 });
 
-// Local dev only. In Netlify, the endpoint is handled by `netlify/functions/chat.js`.
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running at http://localhost:${PORT}`);
-    });
-}
-
+// Netlify expects module.exports.handler
+module.exports.handler = serverless(app);
 
